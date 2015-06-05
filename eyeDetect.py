@@ -1,4 +1,4 @@
-from SimpleCV import *
+
 import cv2
 import cv2.cv as cv
 import numpy as np
@@ -21,7 +21,7 @@ true = True
 # the program will learn the correspondence and start drawing a blue blur
 # where you look. It's important to keep your head still (in position AND angle)
 # or it won't work.
-doTraining = False
+doTraining = True
 
 
 
@@ -402,8 +402,8 @@ def draw_rects(img, rects, color):
 
 
 # init the filters we'll use below
-haarFaceCascade = cv2.CascadeClassifier("./haarcascade_frontalface_alt.xml")
-haarEyeCascade = cv2.CascadeClassifier("./haarcascade_eye.xml")
+haarFaceCascade = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
+haarEyeCascade = cv2.CascadeClassifier("haarcascade_eye.xml")
 #img.listHaarFeatures() displays these Haar options:
 #['eye.xml', 'face.xml', 'face2.xml', 'face3.xml', 'face4.xml', 'fullbody.xml', 'glasses.xml', 'lefteye.xml', #'left_ear.xml', 'left_eye2.xml', 'lower_body.xml', 'mouth.xml', 'nose.xml', 'profile.xml',
 #'right_ear.xml', 'right_eye.xml', 'right_eye2.xml', 'two_eyes_big.xml', 'two_eyes_small.xml', 'upper_body.xml', #'upper_body2.xml']
@@ -539,7 +539,8 @@ def getOffset(frame, allowDebugDisplay=True, trackAverageOffset=True, directInfe
                     #we haven't set up the reference point yet
     ##                import pdb
     ##                pdb.set_trace()
-                    haystackKeypoints, haystackDescriptors = detector.detect(gray, None, useProvidedKeypoints = False)
+    
+                    haystackKeypoints, haystackDescriptors = detector.detectAndCompute(gray, None)
                     if len(haystackKeypoints) != 0:
                         betweenEyes = (np.array(featureCenterXY(leftEye_rightEye[0]))+np.array(featureCenterXY(leftEye_rightEye[1])))/2
                         virtualpoint = ClassyVirtualReferencePoint.ClassyVirtualReferencePoint(haystackKeypoints, haystackDescriptors, (betweenEyes[0], betweenEyes[1]), face, leftEye_rightEye[0], leftEye_rightEye[1])
@@ -547,7 +548,7 @@ def getOffset(frame, allowDebugDisplay=True, trackAverageOffset=True, directInfe
                         print "begin fail"
                 else:
                     #we've already created it
-                    keypoints, descriptors = detector.detect(gray, None, useProvidedKeypoints = False)
+                    keypoints, descriptors = detector.detectAndCompute(gray,None)
                     #keypoints, descriptors = detector.detect(faceImg, None, useProvidedKeypoints = False)
                     if drawKeypoints:
                         imgToDrawOn = output
@@ -654,7 +655,7 @@ def fitTransformation(OffsetsAndPixels):
 def main():
     previewWindow = cv2.namedWindow("preview") # open a window to show debugging images
 
-    vc = cv2.VideoCapture(0) # Initialize the default camera
+    vc = cv2.VideoCapture(1) # Initialize the default camera
     if vc.isOpened(): # try to get the first frame
         (readSuccessful, frame) = vc.read()
     else:
@@ -674,7 +675,7 @@ def main():
 def mainForTraining():
     import pygamestuff
     crosshair = pygamestuff.Crosshair([7, 2], quadratic = False)
-    vc = cv2.VideoCapture(0) # Initialize the default camera
+    vc = cv2.VideoCapture(1) # Initialize the default camera
     if vc.isOpened(): # try to get the first frame
         (readSuccessful, frame) = vc.read()
     else:
